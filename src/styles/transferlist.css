@@ -1,0 +1,38 @@
+.ant-transfer-list-content-item-text {
+  font: normal normal 400 14px var(--font-family);
+}
+.ant-transfer-list-content-item {
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+}
+.ant-transfer-list-header .ant-checkbox-input {
+  background-color: blanchedalmond !important;
+}
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+.ant-transfer-list-header-selected {
+  font: normal normal 500 14px var(--font-family);
+}
+.ant-btn-primary {
+  color: rgba(0, 0, 0, 0.25) !important;
+}
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: var(--primary-color) !important;
+}
+
+.ant-checkbox-indeterminate .ant-checkbox-inner:after {
+  background-color: var(--primary-color) !important;
+}
+
+.ant-transfer .ant-transfer-list-content-item {
+  min-height: 30px;
+}
+.ant-transfer-list-header-title {
+  font-size: 17px;
+  font-weight: 700;
+}
+.strike-row {
+  text-decoration: line-through;
+}

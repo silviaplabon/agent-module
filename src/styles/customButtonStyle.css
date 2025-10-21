@@ -1,0 +1,10 @@
+.customButton {
+  cursor: pointer;
+  border: 1px solid rgb(192, 204, 218);
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  background-color: rgb(255, 255, 255);
+  border-radius: 0.25rem;
+  margin-left: 10px;
+  color: #000000 !important;
+}

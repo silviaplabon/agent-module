@@ -1,0 +1,69 @@
+.ant-steps .ant-steps-item-process .ant-steps-item-icon,
+.ant-steps .ant-steps-item-finish .ant-steps-item-icon {
+  background-color: #d9d9d9 !important;
+  border-color: #fff !important;
+}
+.ant-steps .ant-steps-item-process .ant-steps-item-icon {
+  background-color: #000229 !important;
+  border-color: #fff !important;
+}
+.ant-steps-item-wait .ant-steps-icon {
+  color: #000229 !important;
+}
+.ant-steps-icon {
+  font: normal normal 500 12px var(--font-family) !important;
+  color: #fff !important;
+  height: 20px;
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ant-steps-item-tail {
+  margin-block-end: 10px !important;
+  inset-inline-start: 13px !important;
+}
+.ant-steps-item-icon {
+  margin-inline-end: 10px !important;
+}
+.ant-steps-item-tail {
+  background: #fff !important;
+  background-color: #fff !important;
+}
+.ant-steps-item-tail:after {
+  background: #fff !important;
+  background-color: #fff !important;
+}
+.custom-vertical-line {
+  position: absolute !important;
+  left: 12px !important;
+  width: 1.5px;
+  top: 35px;
+  background-color: var(--text-color);
+  z-index: 0;
+}
+
+.ant-steps-item-title {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 0px !important;
+  font: normal normal 400 12px var(--font-family);
+}
+.ant-steps-item-description {
+  padding-bottom: 0px !important;
+  margin-top: 0rem !important;
+}
+.ant-steps-item-content {
+  min-height: 20px !important;
+}
+.ant-steps-item-tail::after {
+  background: var(--primary-color) !important;
+}
+
+.ant-steps-item-active,
+.ant-steps-item-finish {
+  margin-top: 0px !important;
+}
+.ant-steps-icon {
+  /* top: -20px !important; */
+}

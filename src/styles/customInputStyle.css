@@ -1,0 +1,112 @@
+.validInputContainer .ant-picker-outlined:focus-within,
+.ant-picker-outlined:hover {
+  border: 1px solid black;
+  box-shadow: none !important;
+}
+.validInputContainer .ant-select .ant-select-arrow {
+  margin-right: -8px !important;
+  /* margin-top: -10px !important; */
+  font-size: 10px !important;
+}
+.validInputContainer .ant-select .ant-select-clear {
+  font-size: 12px !important;
+  margin-right: -9px !important;
+}
+.ant-select-selector {
+  border: 1px solid var(--border-color) !important;
+}
+
+/* DROPDOWN */
+.validInputContainer
+  .ant-select-outlined:not(.ant-select-disabled):not(
+    .ant-select-customize-input
+  ):not(.ant-pagination-size-changer):hover
+  .ant-select-selector,
+.validInputContainer
+  .ant-select-focused
+  .ant-select-outlined:not(.ant-select-disabled):not(
+    .ant-select-customize-input
+  ):not(.ant-pagination-size-changer)
+  .ant-select-selector,
+.validInputContainer .ant-input-affix-wrapper:hover,
+.validInputContainer .ant-input-affix-wrapper:focus-within,
+.validInputContainer .ant-select:hover .ant-select-selector,
+.validInputContainer .ant-select:focus .ant-select-selector,
+.validInputContainer
+  .ant-select-focused
+  .ant-select-outlined:not(.ant-select-customize-input):not(
+    .ant-pagination-size-changer
+  )
+  .ant-select-selector,
+.validInputContainer .ant-select:hover .ant-select-selector,
+.validInputContainer .ant-select:focus .ant-select-selector,
+.validInputContainer
+  .ant-select-focused
+  .ant-select-outlined:not(.ant-select-customize-input):not(
+    .ant-pagination-size-changer
+  )
+  .ant-select-selector {
+  border: 1px solid var(--border-color) !important;
+  box-shadow: none !important;
+  border-color: var(--border-color) !important;
+}
+.validInputContainer .ant-input {
+  /* border-color: #ffffff !important; */
+  /* border-width: 1.5px !important; */
+  /* border: 1.5px solid var(--primary-color) !important; */
+}
+
+.validInputContainer .ant-input:hover,
+.validInputContainer .ant-input:focus {
+  box-shadow: none !important;
+  border-color: var(--border-color) !important;
+  border-width: 1px !important;
+}
+.addonBeforeInput .ant-input {
+  border: none !important;
+}
+
+/* SHOWING RED BORDER FOR ERROR FIELDS */
+.errorInputText .ant-picker,
+.errorInputText
+  .ant-select-outlined:not(.ant-select-customize-input)
+  .ant-select-selector,
+.errorInputText .ant-input:placeholder-shown,
+.errorInputText .ant-picker-outlined,
+.errorInputText .ant-select-selector,
+.errorInputText .ant-input,
+.errorInputText
+  .ant-select-outlined:not(.ant-select-customize-input).ant-select-selector {
+  border: 1px solid red !important;
+}
+.errorInputText .ant-typography {
+  color: red !important;
+}
+.errorInputText .addonBeforeInput .ant-input {
+  border: none !important;
+}
+.errorInputText .addonBeforeInput .ant-input-affix-wrapper,
+.errorInputText .addonOnlyInput {
+  border: 1px solid red !important;
+}
+.ant-input-group-wrapper .ant-input {
+  height: 30px !important;
+  color: #000 !important;
+}
+.ant-input-outlined {
+  height: 30px !important;
+}
+.propertyNameFilter .ant-select-selector,
+.towerNameFilter .ant-select-selector {
+  border-top-right-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
+}
+
+.ant-input-suffix {
+  margin-left: 0px !important;
+}
+
+.ant-drawer-body{
+  background-color: var(--background-color);
+  color:var(--primary-color)
+}
