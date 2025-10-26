@@ -1,302 +1,285 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { AutoComplete, Spin, Typography } from "antd";
-import React, { useState, useEffect } from "react";
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Controller } from "react-hook-form";
-import { DownOutlined } from "@ant-design/icons";
-import CustomInputFieldContainer from "../Container/customInputFieldContainer.tsx";
-import { FontFamily } from "@/utils/common.tsx";
-import AntResult from "../AntResult.tsx";
 
-const AutoCompleteComponent = (props) => {
-  const {
-    isCharacterLimitedSearch = false,
-    getLovData,
-    handleSelection,
-    handleOnSearch,
-    value,
-    isWithController,
-    setValue,
-    codeKey,
-    minWidth,
-    field,
-    fontFamily,
-    isFilterItem,
-    labelName,
-    placeholder,
-    addonAfter,
-    addonBefore,
-    style,
-    disabled,
-    clearErrors,
-    defaultValue = "",
-    isClearDisabled = false,
-    dropdownStyle,
-    handleOpenChange,
-    getValues,
-    lovLabelKey,
-    isAddonElement,
-    isAddonAfter,
-    className,
-  } = props;
+interface OptionType {
+  label: string;
+  value: string;
+  [key: string]: any;
+}
 
-  const [searchText, setSearchText] = useState("");
+interface AutoCompleteComponentProps {
+  options?: OptionType[];
+  getLovData?: (
+    name?: string,
+    value?: string
+  ) => Promise<{ lov: OptionType[] }>;
+  handleSelection?: (value: string, option: OptionType) => void;
+  value?: string;
+  placeholder?: string;
+  disabled?: boolean;
+  error?: boolean;
+  minWidth?: string | number;
+  className?: string;
+  field?: any;
+  clearErrors?: (fields: string[]) => void;
+  codeKey?: string;
+  setValue?: (name: string, value: string) => void;
+  dropdownStyle?: React.CSSProperties;
+  errors?: any;
+  isWithController?: boolean;
+}
+
+const AutoCompleteComponent: React.FC<AutoCompleteComponentProps> = ({
+  options = [],
+  getLovData,
+  handleSelection,
+  value = "",
+  placeholder,
+  disabled,
+
+  minWidth,
+  className,
+  field,
+  clearErrors,
+  codeKey,
+  setValue,
+  dropdownStyle,
+  errors,
+  isWithController,
+}) => {
+  const [searchText, setSearchText] = useState(value || field?.value || "");
   const [isLovLoading, setIsLovLoading] = useState(false);
-  const [lov, setLov] = useState([]);
-  const [filteredLov, setFilteredLov] = useState([]);
-  const [isSearching, setIsSearching] = useState("");
+  const [lov, setLov] = useState<OptionType[]>(options);
+  const [open, setOpen] = useState(false);
+  const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
+  const buttonRef = useRef<HTMLDivElement>(null);
+  const blurTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  const handleSelectChange = (val1, val2: unknown) => {
-    if (isWithController) {
-      setValue(`${codeKey}`, val1 || defaultValue);
+  // ✅ Initial load — fetch LOV on mount
+  useEffect(() => {
+    const fetchInitialLov = async () => {
+      if (getLovData) {
+        setIsLovLoading(true);
+        try {
+          const data = await getLovData(codeKey, "");
+          setLov(data.lov);
+        } catch (e) {
+          console.error("Failed to fetch LOV:", e);
+        } finally {
+          setIsLovLoading(false);
+        }
+      }
+    };
+    fetchInitialLov();
+  }, [getLovData, codeKey]);
+
+  // ✅ Sync search text with both value and field.value
+  useEffect(() => {
+    if (value !== undefined && value !== null) {
+      setSearchText(value);
+    } else if (field?.value) {
+      setSearchText(field.value);
+    }
+  }, [value, field?.value]);
+
+  // ✅ Sync local LOV with props
+  useEffect(() => {
+    if (options?.length > 0) {
+      setLov(options);
+    }
+  }, [options]);
+
+  // ✅ Calculate dropdown position
+  useEffect(() => {
+    if (!open || !buttonRef.current) return;
+    const rect = buttonRef.current.getBoundingClientRect();
+    setCoords({
+      top: rect.bottom + window.scrollY,
+      left: rect.left + window.scrollX,
+      width: rect.width,
+    });
+  }, [open]);
+
+  const handleSelect = (opt: OptionType) => {
+    setSearchText(opt.label);
+    setOpen(false);
+
+    if (field?.onChange) field.onChange(opt.label);
+    if (setValue && codeKey) setValue(codeKey, opt.value);
+    if (clearErrors && codeKey) clearErrors([codeKey]);
+    if (handleSelection) handleSelection(opt.value, opt);
+  };
+
+  const handleFocus = () => {
+    if (blurTimeout.current) clearTimeout(blurTimeout.current);
+    setOpen(true);
+  };
+
+  const handleBlur = () => {
+    blurTimeout.current = setTimeout(() => setOpen(false), 150);
+  };
+
+  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setSearchText(val);
+    if (field?.onChange) field.onChange(val);
+    if (getLovData) {
+      setIsLovLoading(true);
+      try {
+        const data = await getLovData(codeKey, val);
+        setLov(data.lov);
+      } catch (e) {
+        console.error("Error fetching LOV:", e);
+      } finally {
+        setIsLovLoading(false);
+      }
     }
   };
 
   return (
     <>
-      <AutoComplete
-        suffixIcon={<DownOutlined />}
-        options={
-          lov?.length < 1
-            ? !isLovLoading && isCharacterLimitedSearch && !searchText
-              ? [
-                  {
-                    label: `Please enter more characters to search...`,
-                    value: "",
-                    disabled: true,
-                  },
-                ]
-              : []
-            : lov
-        }
-        {...field}
-        {...(!isWithController && { value: isSearching ? searchText : value })}
-        dropdownStyle={{ ...dropdownStyle }}
-        style={{
-          width: "100%",
-          minWidth: minWidth ? minWidth : "150px",
-          height: 30,
-          color: isFilterItem ? "#2b3a67" : "#222222",
-          ...style,
-        }}
-        disabled={disabled}
-        notFoundContent={
-          isLovLoading ? (
-            <div className="spinContainer ">
-              <Spin size="small" />
-            </div>
+      <div ref={buttonRef} className="relative w-full">
+        <input
+          type="text"
+          className={`block w-full p-2.5 text-sm ${
+            errors && errors[name] && isWithController
+              ? "bg-red-50 border border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500 dark:bg-gray-700 focus:border-red-500 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500"
+              : "bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          }`}
+          value={searchText}
+          placeholder={placeholder}
+          disabled={disabled}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          onClick={() => setOpen(true)}
+          onBlur={handleBlur}
+          autoComplete="off"
+          style={typeof minWidth === "number" ? { width: minWidth } : undefined}
+        />
+
+        <span className="absolute right-2 top-2">
+          {open ? (
+            <ChevronUpIcon className="w-4 h-4 inline" />
           ) : (
-            <AntResult
-              typeOfResult="datanotexist"
-              onClick={undefined}
-              redirectTitle={undefined}
-            />
-          )
-        }
-        autoComplete="nope"
-        placeholder={placeholder}
-        autoCorrect="off" // iOS
-        autoCapitalize="off" // mobile
-        spellCheck={false}
-        className={`w-full  text-xs customInputText ${
-          isAddonElement ? "addonElementDropdown" : ""
-        } ${isAddonAfter ? "addonElementAfterDropdown" : ""} ${className}`}
-        onSelect={(val1, val2) => {
-          if (val2?.isOnclick) {
-            val2?.onClick();
-          } else {
-            setSearchText(val2?.label);
-            setIsSearching(false);
-            if (isWithController) {
-              if (labelName == "Code") {
-                field.onChange(val2?.data?.phoneCode);
-              } else {
-                field.onChange(val2.label);
-              }
-              if (codeKey && typeof clearErrors === "function") {
-                clearErrors([codeKey]);
-              }
-            }
-            handleSelectChange(val1, val2);
-            if (typeof handleSelection === "function") {
-              handleSelection(val1, val2);
-            }
-          }
-        }}
-        allowClear={isClearDisabled ? false : true}
-        onClear={() => {
-          if (!isClearDisabled) {
-            if (isWithController) {
-              field.onChange();
-              handleSelectChange(codeKey === "currencyCode" ? "AED" : "", "");
-            }
-            if (typeof handleSelection === "function") {
-              handleSelection(
-                codeKey === "currencyCode" ? "AED" : "",
-                "",
-                true
-              );
-            }
-          }
-        }}
-        onBlur={() => {
-          if (
-            searchText &&
-            lov?.filter(
-              (item) =>
-                item?.label === searchText ||
-                item?.data?.[lovLabelKey] === searchText
-            ).length === 0
-          ) {
-            if (typeof setValue === "function") {
-              setValue(codeKey, "");
-              setSearchText("");
-            }
-            if (isWithController) {
-              field.onChange("");
-            }
-          }
+            <ChevronDownIcon className="w-4 h-4 inline" />
+          )}
+        </span>
+      </div>
 
-          if (
-            typeof handleOnSearch === "function" &&
-            searchText === "" &&
-            isSearching
-          ) {
-            handleOnSearch("");
-          }
-        }}
-        onOpenChange={async (open) => {
-          if (open) {
-            if (!isCharacterLimitedSearch) {
-              setIsLovLoading(true);
-              const data = await getLovData();
-              setIsLovLoading(false);
-              setLov(data?.lov ? data.lov : []);
-              setFilteredLov(data?.lov ? data.lov : []);
-            } else if (isCharacterLimitedSearch) {
-              setIsSearching(true);
-              setSearchText(value);
-              setIsLovLoading(true);
-
-              const data = await getLovData(
-                isSearching ? searchText : !isSearching ? value : ""
-              );
-              if (!data?.isCancelledApi) {
-                setIsLovLoading(false);
-              }
-              setLov(data.lov);
-            } else {
-              const data = await getLovData("", true);
-              setIsLovLoading(false);
-              setLov(data?.lov ? data.lov : []);
-            }
-          }
-        }}
-        onSearch={async (text) => {
-          if (typeof setValue === "function" && isCharacterLimitedSearch) {
-            // setValue(codeKey, text);
-            // setValue(name, text);
-            // setValue(codeKey, "");
-          }
-
-          setSearchText(text);
-          if (typeof handleOnSearch === "function") {
-            handleOnSearch(text);
-          }
-          if (isCharacterLimitedSearch) {
-            setIsSearching(true);
-
-            setIsLovLoading(true);
-            const data = await getLovData(text);
-            if (!data?.isCancelledApi) {
-              setIsLovLoading(false);
-            }
-            setLov(data.lov);
-          } else {
-            setIsSearching(true);
-            const temp = lov?.filter((item) =>
-              item?.label?.toLowerCase().includes(text?.toLowerCase())
-            );
-            setFilteredLov(temp);
-          }
-        }}
-      />
+      {open &&
+        createPortal(
+          <ul
+            className="absolute bg-white border border-gray-200 rounded shadow-lg z-[99999]"
+            style={{
+              top: coords.top,
+              left: coords.left,
+              width: coords.width,
+              position: "absolute",
+              maxHeight: 200,
+              overflowY: "auto",
+              ...dropdownStyle,
+            }}
+            onMouseDown={(e) => e.preventDefault()}
+          >
+            {isLovLoading ? (
+              <li className="px-3 py-2 text-gray-500 text-sm">Loading...</li>
+            ) : lov?.length > 0 ? (
+              lov.map((opt) => (
+                <li key={opt.value}>
+                  <button
+                    type="button"
+                    className="w-full text-left px-3 py-2 hover:bg-blue-100 text-gray-700"
+                    onMouseDown={() => handleSelect(opt)}
+                  >
+                    {opt.label}
+                  </button>
+                </li>
+              ))
+            ) : (
+              <li className="px-3 py-2 text-gray-500 text-sm">
+                No results found
+              </li>
+            )}
+          </ul>,
+          document.body
+        )}
     </>
   );
 };
 
-const CustomAutoComplete = (props) => {
-  const {
-    isWithController,
-    labelName,
-    name,
-    control,
-    isRequired,
-    errors,
-    errorText,
-    gridSize,
-    hideErrorMessageContainer,
-    placeholder,
-    value,
-    colStyle,
-  } = props;
+interface CustomAutoCompleteProps {
+  labelName?: string;
+  name: string;
+  control?: any;
+  isRequired?: boolean;
+  errors?: any;
+  errorText?: string;
+  placeholder?: string;
+  options?: OptionType[];
+  value?: string;
+  [key: string]: any;
+}
+
+const CustomAutoComplete: React.FC<CustomAutoCompleteProps> = ({
+  labelName,
+  name,
+  control,
+  isRequired,
+  errors,
+  errorText,
+  placeholder,
+  options,
+  value,
+  ...rest
+}) => {
+  const error = errors && errors[name];
 
   return (
-    <>
-      <CustomInputFieldContainer
-        title={labelName}
-        isMandatory={isRequired}
-        gridSize={gridSize}
-        style={{}}
-        colStyle={colStyle}
-      >
-        <div
-          style={{ width: "100%", display: "flex", flexDirection: "column" }}
-          className={
-            errors && errors[name] ? "errorInputText" : "validInputContainer"
-          }
-        >
-          {isWithController ? (
-            <Controller
-              name={name}
-              control={isWithController ? control : ""}
-              defaultValue={!isWithController ? value : ""}
-              rules={{
-                validate: (value) => value !== `Select ${labelName}`,
-                required: {
-                  value: isRequired,
-                  message: `${labelName} is required`,
-                },
-              }}
-              render={({ field }) => (
-                <AutoCompleteComponent
-                  field={field}
-                  fontFamily={FontFamily}
-                  isWithController={true}
-                  {...props}
-                ></AutoCompleteComponent>
-              )}
+    <div className="mb-4 w-full">
+      {labelName && (
+        <label className="block mb-1 text-sm font-medium text-gray-700">
+          {labelName}
+          {isRequired && <span className="text-red-500 ml-1">*</span>}
+        </label>
+      )}
+
+      {control ? (
+        <Controller
+          name={name}
+          control={control}
+          rules={{
+            required: isRequired ? `${labelName} is required` : false,
+          }}
+          render={({ field }) => (
+            <AutoCompleteComponent
+              {...rest}
+              field={field}
+              value={value || field.value}
+              options={options}
+              error={!!error}
+              placeholder={placeholder}
             />
-          ) : (
-            <AutoCompleteComponent {...props}></AutoCompleteComponent>
           )}
-          {!hideErrorMessageContainer &&
-            (errors && errors[name] && isWithController ? (
-              <Typography
-                style={{
-                  height: "14px",
-                  font: `normal normal normal 14px ${FontFamily}`,
-                  marginBottom: "0.5rem",
-                  color: "red",
-                }}
-              >
-                {errorText ? errorText : `${labelName} is required`}
-              </Typography>
-            ) : (
-              <></>
-            ))}
-        </div>
-      </CustomInputFieldContainer>
-    </>
+        />
+      ) : (
+        <AutoCompleteComponent
+          {...rest}
+          value={value}
+          options={options}
+          placeholder={placeholder}
+          error={!!error}
+        />
+      )}
+
+      {error && (
+        <span className="text-xs text-red-500 mt-1">
+          {errorText || `${labelName} is required`}
+        </span>
+      )}
+    </div>
   );
 };
+
 export default React.memo(CustomAutoComplete);

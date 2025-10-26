@@ -6,12 +6,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { KeycloackContextProvider } from "./keycloak";
 import { Suspense, useEffect, useState } from "react";
 import AppRoutes from "./routes";
-import "../src/styles/antInputStyle.css";
-import "../src/styles/antStyle.css";
-import "../src/styles/customInputStyle.css";
-import "../src/styles/transferlist.css";
+// import "../src/styles/antInputStyle.css";
+// import "../src/styles/antStyle.css";
+// import "../src/styles/customInputStyle.css";
+// import "../src/styles/transferlist.css";
 import WebsiteLoader from "./components/websiteLoader";
-import "./App.css";
+// import "./App.css";
+import Home from "./pages/home";
 
 const App = () => {
   const [loading, setLoading] = useState(false);
@@ -38,11 +39,12 @@ const App = () => {
       {loading ? (
         <WebsiteLoader></WebsiteLoader>
       ) : (
-        <BrowserRouter basename={import.meta.env.VITE_INVENTORY_URL}>
-          {/* <SidebarProvider> */}
-          <AppRoutes />
-          {/* </SidebarProvider> */}
-        </BrowserRouter>
+        // <BrowserRouter basename={import.meta.env.VITE_INVENTORY_URL}>
+        //   {/* <SidebarProvider> */}
+        //   <AppRoutes />
+        //   {/* </SidebarProvider> */}
+        // </BrowserRouter>
+        <Home />
       )}
       {/* </TooltipProvider> */}
       {/* </QueryClientProvider>

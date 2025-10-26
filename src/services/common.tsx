@@ -3,6 +3,7 @@ import { message } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import { LovAPI } from "./lov";
+import fs from "fs";
 export const CommonAPI = {
   getPageData: async function (
     url: string,
@@ -461,5 +462,32 @@ export const CommonAPI = {
     const resData = await LovAPI.getStaticLov(typeOfLov, searchUrl);
 
     return { lov: resData.data || [] };
+  },
+  uploadPandaDoc: async () => {
+    const formData = new FormData();
+    formData.append("parse_form_fields", "true");
+    formData.append("name", "API Sample Document from PandaDoc Template");
+
+    const fileInput = document.getElementById("fileInput") as HTMLInputElement;
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+      formData.append("file", fileInput.files[0], fileInput.files[0].name);
+    }
+    const url = "https://api.pandadoc.com/public/v1/documents?upload=";
+    const options = {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        Authorization: import.meta.env.VITE_PANDA_DOC_AUTHORIZATION_TOKEN,
+      },
+      body: formData,
+    };
+
+    fetch(url, options)
+      .then((res) => {
+        res.json();
+        console.log(res.json(), "res in json");
+      })
+      .then((json) => console.log(json))
+      .catch((err) => console.error(err));
   },
 };

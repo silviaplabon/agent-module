@@ -1,12 +1,10 @@
-import React, { lazy, Suspense, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
-import Layout from "./components/Layout";
 import { KeycloackContext } from "./keycloak";
 
 import AntResult from "./components/AntResult.tsx";
 import WebsiteLoader from "./components/websiteLoader.tsx";
 import Home from "./pages/home.tsx";
-import LayoutAntd from "./components/LayoutAntd.tsx";
 
 const AppRoutes = () => {
   const { keycloackValue, authenticated, userType } =
@@ -23,14 +21,11 @@ const AppRoutes = () => {
   }, [keycloackValue, authenticated]);
 
   return (
-    <div className="overflow-hidden" >
+    <div className="overflow-hidden">
       {keycloackValue && authenticated && userType ? (
         <Routes>
-          <Route path="/" element={<LayoutAntd />}>
-            <Route index element={<LayoutAntd/>} />
-
-            {/* <Route path="setup/attribute" element={<AttributeSetup />} /> */}
-            {/* <Route path="setup/bank" element={<BankSetup />} /> */}
+          <Route path="/" element={<></>}>
+            <Route index element={<Home />} />
           </Route>
           {/* <Route path="*" element={<NOTFOUND />} /> */}
         </Routes>

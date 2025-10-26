@@ -23,12 +23,14 @@ const CustomLabelAndValueContainer = ({
   style,
   titleStyle,
 }) => {
+  const containerClass = `${isVerticalItem && isFirstItem ? "mt-3" : "mt-0"}`;
+
   return (
     <Col
       xs={24}
       md={gridSize?.inputGridSize}
+      className={containerClass}
       style={{
-        marginTop: isVerticalItem && isFirstItem ? "11px" : "0px!important",
         paddingTop: isVerticalItem ? "0rem" : "0.1rem",
         ...style,
       }}
@@ -50,19 +52,19 @@ const CustomLabelAndValueContainer = ({
               ? gridSize?.titleGridSize
               : 8
           }
-          style={{
-            display: "flex",
-            alignItems: "flex-start",
-          }}
+          className="flex items-start"
         >
           <Typography
+            className={`text-black text-[14px] font-semibold mt-0 ${
+              isVerticalItem ? "pt-0" : ""
+            }`}
             style={{
-              font: `normal normal 700 14x ${FontFamily}`,
-              color: "#000",
+              fontFamily: FontFamily,
               fontSize: "14px",
               fontWeight: 600,
               marginTop: "0px",
               paddingTop: isVerticalItem ? "0px!important" : "",
+              ...titleStyle,
             }}
           >
             {title}
@@ -83,24 +85,21 @@ const CustomLabelAndValueContainer = ({
               ? 24 - gridSize?.titleGridSize
               : 16
           }
-          style={{ marginTop: "1px" }}
+          className="mt-[1px]"
         >
           <Typography
+            className={`text-black text-[14px] font-normal bg-white cursor-auto min-h-[27px] p-[5px] rounded-[10px] ${
+              isWithEllipsis ? "ellipsisItemText" : ""
+            }`}
             style={{
-              font: `normal normal normal 12px ${FontFamily}`,
-              color: "#000",
+              fontFamily: FontFamily,
               fontSize: "14px",
               fontWeight: 400,
               marginTop: "0px",
               backgroundColor: "white",
               cursor: typeof handleOnClick === "function" ? "pointer" : "",
               ...valueStyle,
-              minHeight: "27px",
-              padding: "5px",
-              borderRadius: "10px",
-              ...titleStyle,
             }}
-            className={isWithEllipsis ? "ellipsisItemText" : ""}
             onClick={() => {
               if (typeof handleOnClick === "function") {
                 handleOnClick();
